@@ -8,9 +8,9 @@ pretrain_model=$3 # e.g. cdiffuse_pre/weights-ckpt.pt"
 voicebank_noisy="${voicebank}/noisy_trainset_28spk_wav"
 voicebank_clean="${voicebank}/clean_trainset_28spk_wav"
 
-wav_root=${voicebank_noisy}
-spec_root=${output_path}/spec/voicebank_Noisy
-spec_type="noisy spectrum"
+wav_root=${podcast}
+spec_root=${output_path}/spec/podcast_clean
+spec_type="clean spectrum"
 
 
 if [[ ${stage} -le 1 ]]; then
@@ -28,20 +28,20 @@ if [[ ${stage} -le 1 ]]; then
 
 fi
 
-if [[ ${stage} -le 2 ]]; then
-    echo "stage 2 : training model"
-    target_wav_root=${voicebank_clean}
-    noisy_wav_root=${voicebank_noisy}
+# if [[ ${stage} -le 2 ]]; then
+#     echo "stage 2 : training model"
+#     target_wav_root=${voicebank_clean}
+#     noisy_wav_root=${voicebank_noisy}
 
-    train_spec_list=""
+#     train_spec_list=""
 
-    spec_path=${spec_root}/train
-    train_spec_list="${train_spec_list} ${spec_path}"
+#     spec_path=${spec_root}/train
+#     train_spec_list="${train_spec_list} ${spec_path}"
     
-    if [ -z "$pretrain_model" ]; then
-        python src/cdiffuse/__main__.py ${output_path}/${model_name} ${target_wav_root} ${noisy_wav_root} ${train_spec_list}  --se  --voicebank
-    else
-        python src/cdiffuse/__main__.py ${output_path}/${model_name} ${target_wav_root} ${noisy_wav_root} ${train_spec_list}  --se  --voicebank --pretrain_path ${output_path}/${pretrain_model}
-    fi
-fi
+#     if [ -z "$pretrain_model" ]; then
+#         python src/cdiffuse/__main__.py ${output_path}/${model_name} ${target_wav_root} ${noisy_wav_root} ${train_spec_list}  --se  --voicebank
+#     else
+#         python src/cdiffuse/__main__.py ${output_path}/${model_name} ${target_wav_root} ${noisy_wav_root} ${train_spec_list}  --se  --voicebank --pretrain_path ${output_path}/${pretrain_model}
+#     fi
+# fi
 

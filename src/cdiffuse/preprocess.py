@@ -27,10 +27,11 @@ from glob import glob
 from tqdm import tqdm
 
 from params import params
+import transformers
 
 random.seed(23)
 
-def make_spectrum(filename=None, y=None, is_slice=False, feature_type='logmag', mode=None, FRAMELENGTH=400, SHIFT=160, _max=None, _min=None):
+def make_spectrum(filename=None, y=None):
     if y is not None:
         y = y
     else:
@@ -92,24 +93,13 @@ def transform(filename,indir,outdir):
     spectrogram = torch.clamp((spectrogram + 100) / 100, 0.0, 1.0)
     np.save(f'{filename.replace(indir,outdir)}.spec.npy', spectrogram.cpu().numpy()) 
 
-def spec_transform(filename,indir,outdir):
-    spec, _, _ = make_spectrum(filename,FRAMELENGTH=params.n_fft, SHIFT=params.hop_samples)
-    np.save(f'{filename.replace(indir,outdir)}.spec.npy', spec)
-
+def spec_transform(filename, indir, outdir):
+    spec, _, _ = make_spectrum(filename)
+    np.save(f'{filename.replace(indir, outdir)}.npy', spec)
 
 
 def main(args):
-  if args.se:
-    params.n_mels = 513
-  else:
-    params.n_mels = 80
-
-  if args.se or args.voicebank:
-    filenames = glob(f'{args.dir}/*.wav', recursive=True)
-  else:
-    filenames = glob(f'{args.dir}/*.Clean.wav', recursive=True)
-#   filenames=sorted(filenames)
-#   random.shuffle(filenames)
+  filenames = glob(f'{args.dir}/*.wav', recursive=True)
 
 
   if args.se:
@@ -126,8 +116,6 @@ if __name__ == '__main__':
       help='directory containing .wav files for training')
   parser.add_argument('outdir',
       help='output directory containing .npy files for training')
-  parser.add_argument('--se', dest='se', action='store_true')
-  parser.add_argument('--se_pre', dest='se', action='store_false')
   parser.add_argument('--train', dest='test', action='store_false')
   parser.add_argument('--test', dest='test', action='store_true')
   parser.add_argument('--voicebank', dest='voicebank', action='store_true')
